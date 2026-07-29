@@ -3,9 +3,33 @@
 <head>
   <meta charset="UTF-8">
   <title>Interview Trainer</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Interview Trainer</h1>
-  <p>Frontend zatiaľ prázdny, backend beží.</p>
+  <div class="container">
+    <h1>Interview Trainer</h1>
+
+    <div id="setup">
+      <label for="position">Vyber pozíciu:</label>
+      <select id="position"></select>
+      <button id="startBtn">Začať</button>
+    </div>
+
+    <div id="interview" class="hidden">
+      <h2 id="questionText"></h2>
+      <textarea id="answerInput" rows="6" placeholder="Napíš svoju odpoveď..."></textarea>
+      <button id="submitBtn">Odoslať odpoveď</button>
+    </div>
+
+    <div id="feedback" class="hidden">
+      <h3>Vyhodnotenie</h3>
+      <p><strong>Skóre:</strong> <span id="scoreValue"></span>/5</p>
+      <p><strong>Silné stránky:</strong> <span id="strengthsText"></span></p>
+      <p><strong>Na zlepšenie:</strong> <span id="improvementsText"></span></p>
+      <button id="nextBtn">Ďalšia otázka</button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
 </body>
 </html>
