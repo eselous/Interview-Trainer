@@ -1,0 +1,29 @@
+{
+  "name": "interview-trainer",
+  "version": "1.0.0",
+  "description": "Program that asks you questions depending which job/position you are applying to and scoring your answers",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server/index.js",
+    "dev": "nodemon server/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eselous/Interview-Trainer.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/eselous/Interview-Trainer/issues"
+  },
+  "homepage": "https://github.com/eselous/Interview-Trainer#readme",
+  "dependencies": {
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}
