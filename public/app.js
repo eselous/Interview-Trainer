@@ -46,7 +46,11 @@ submitBtn.addEventListener('click', async () => {
     const res = await fetch('/api/answer', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question: currentQuestion, answer })
+        body: JSON.stringify({
+            question: currentQuestion,
+            answer,
+            position: currentPosition
+        })
     });
 
     if (!res.ok) {

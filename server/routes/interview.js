@@ -1,42 +1,44 @@
 const express = require('express');
 const router = express.Router();
-const questions = require('../data/questions');
+const { generateQuestion, evaluateAnswer } = require('../services/aiService');
 
-// Vráti zoznam dostupných pozícií
+const positions = ['frontend', 'backend', 'fullstack'];
+
 router.get('/positions', (req, res) => {
-    const positions = Object.keys(questions);
-    res.json({ positions });
+  res.json({ positions });
 });
 
-// Vráti náhodnú otázku pre danú pozíciu
-router.get('/questions/:position', (req, res) => {
-    const { position } = req.params;
-    const pool = questions[position];
+router.get('/questions/:position', async (req, res) => {
+  const { position } = req.params;
+  const { level } = req.query; // napr. ?level=medior
 
-    if (!pool) {
-        return res.status(404).json({ error: 'Pozícia neexistuje' });
-    }
+  if (!positions.includes(position)) {
+    return res.status(404).json({ error: 'Pozícia neexistuje' });
+  }
 
-    const randomIndex = Math.floor(Math.random() * pool.length);
-    res.json({ question: pool[randomIndex] });
+  try {
+    const question = await generateQuestion(position, level);
+    res.json({ question });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Nepodarilo sa vygenerovať otázku' });
+  }
 });
 
-// Zatiaľ fake vyhodnotenie odpovede (len pre demonštráciu)
-router.post('/answer', (req,res) => {
-    const { question, answer } = req.body;
+router.post('/answer', async (req, res) => {
+  const { question, answer, position, level } = req.body;
 
-    if (!answer || answer.trim().length === 0) {
-        return res.status(400).json ({ error: 'Odpoveď nemôže byť prázdna' });
-    }
+  if (!answer || answer.trim().length === 0) {
+    return res.status(400).json({ error: 'Odpoveď nesmie byť prázdna' });
+  }
 
-    // Placeholder logika na vyhodnotenie odpovede pomocou LLM
-    const fakeFeedback = {
-        score: Math.floor(Math.random() * 5) + 1, // 1-5 hodnotenie
-        strengths: "Odpoveď obsahuje správne kľúčové body.",
-        improvements: "Skús rozviť odpoveď s konkrétnymi príkladmi."
-    };
-    
-    res.json(fakeFeedback);
+  try {
+    const feedback = await evaluateAnswer(question, answer, position, level);
+    res.json(feedback);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Nepodarilo sa vyhodnotiť odpoveď' });
+  }
 });
 
 module.exports = router;
