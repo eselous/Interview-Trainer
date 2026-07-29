@@ -18,7 +18,11 @@
 
     <div id="interview" class="hidden">
       <h2 id="questionText"></h2>
-      <textarea id="answerInput" rows="6" placeholder="Napíš svoju odpoveď..."></textarea>
+      <textarea id="answerInput" rows="6" placeholder="Napíš svoju odpoveď alebo použi mikrofón..."></textarea>
+      <div class="controls">
+        <button id="micBtn" type="button">🎤 Nahrávať</button>
+        <span id="recordingStatus" class="hidden">🔴 Nahráva sa...</span>
+      </div>
       <button id="submitBtn">Odoslať odpoveď</button>
     </div>
 

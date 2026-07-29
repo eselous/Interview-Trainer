@@ -57,3 +57,34 @@ select {
   border: 1px solid #ccc;
   border-radius: 5px;
 }
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 10px 0;
+}
+
+#micBtn {
+  background: #dc2626;
+}
+
+#micBtn:hover {
+  background: #b91c1c;
+}
+
+#micBtn:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
+#recordingStatus {
+  color: #dc2626;
+  font-weight: bold;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}

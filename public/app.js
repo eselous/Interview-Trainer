@@ -8,10 +8,87 @@ const questionText = document.getElementById('questionText');
 const answerInput = document.getElementById('answerInput');
 const submitBtn = document.getElementById('submitBtn');
 const nextBtn = document.getElementById('nextBtn');
+const micBtn = document.getElementById('micBtn');
+const recordingStatus = document.getElementById('recordingStatus');
 
 const MAX_POSITION_WORDS = 10;
 let currentPosition = null;
 let currentQuestion = null;
+let recognition = null;
+let isRecording = false;
+
+function setupSpeechRecognition() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  if (!SpeechRecognition) {
+    micBtn.disabled = true;
+    micBtn.textContent = '🎤 Nepodporované v tomto prehliadači';
+    return;
+  }
+
+  recognition = new SpeechRecognition();
+  recognition.lang = 'sk-SK';
+  recognition.continuous = true;
+  recognition.interimResults = true;
+
+  let finalTranscript = '';
+
+  recognition.addEventListener('result', (event) => {
+    let interimTranscript = '';
+
+    for (let i = event.resultIndex; i < event.results.length; i++) {
+      const transcript = event.results[i][0].transcript;
+      if (event.results[i].isFinal) {
+        finalTranscript += transcript + ' ';
+      } else {
+        interimTranscript += transcript;
+      }
+    }
+
+    answerInput.value = (finalTranscript + interimTranscript).trim();
+  });
+
+  recognition.addEventListener('error', (event) => {
+    console.error('Chyba rozpoznávania reči:', event.error);
+    stopRecording();
+  });
+
+  recognition.addEventListener('end', () => {
+    if (isRecording) {
+      // Ak sa nahrávanie ukončilo samo (napr. ticho), ale user ešte nekliknol stop
+      stopRecording();
+    }
+  });
+
+  function startRecording() {
+    finalTranscript = answerInput.value ? answerInput.value + ' ' : '';
+    isRecording = true;
+    recognition.start();
+    micBtn.textContent = '⏹ Zastaviť nahrávanie';
+    recordingStatus.classList.remove('hidden');
+  }
+
+  function stopRecording() {
+    isRecording = false;
+    recognition.stop();
+    micBtn.textContent = '🎤 Nahrávať';
+    recordingStatus.classList.add('hidden');
+  }
+
+  micBtn.addEventListener('click', () => {
+    if (isRecording) {
+      stopRecording();
+    } else {
+        try {
+        startRecording();
+      } catch (err) {
+        console.error('Chyba pri štarte nahrávania:', err);
+      }
+    }
+  });
+}
+
+setupSpeechRecognition();
 
 function isValidPosition(text) {
   const trimmed = text.trim();

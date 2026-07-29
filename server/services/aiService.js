@@ -9,7 +9,7 @@ async function generateQuestion(position, level = 'junior') {
     'praktickú skúsenosť a konkrétny príklad z minulosti',
     'riešenie problému alebo náročnej situácie',
     'odborné znalosti potrebné pre túto prácu',
-    'prácu v tíme alebo komunikáciu s ľuďmi',
+    'prácu v tíme alebo komunikáciu s kolegami',
     'motiváciu a prístup k práci',
     'zvládanie stresu alebo tlaku',
     'organizáciu práce a prioritizáciu úloh'
@@ -17,13 +17,15 @@ async function generateQuestion(position, level = 'junior') {
   const randomAngle = angles[Math.floor(Math.random() * angles.length)];
   const randomSeed = Math.floor(Math.random() * 100000);
 
-  const prompt = `Si skúsený personalista/interviewer, ktorý pripravuje pohovory pre RÔZNE profesie naprieč všetkými odvetviami (nielen IT – môže ísť o remeslo, gastro, administratívu, zdravotníctvo, obchod, manažment atď.).
+  const prompt = `Si skúsený personalista/interviewer, ktorý pripravuje pohovory pre RÔZNE profesie naprieč všetkými odvetviami (nielen IT - môže ísť o remeslo, gastro, administratívu, zdravotníctvo, obchod, manažment atď.).
 
 Pozícia, na ktorú sa vedie pohovor: "${position}"
 Úroveň skúseností: "${level}"
 
 Vygeneruj JEDNU otázku, ktorá sa zameriava na: ${randomAngle}.
 Otázka má byť taká, aká by na reálnom pohovore na túto pozíciu naozaj odznela.
+
+DÔLEŽITÉ: Vyhni sa klišé otázkam o "veľkom množstve zákazníkov/klientov" alebo zvládaní vysokého objemu zákazníckeho kontaktu - táto téma sa v otázkach opakuje príliš často. Zameraj sa na iné aspekty danej pozície.
 
 [seed: ${randomSeed}]
 
