@@ -41,3 +41,19 @@ select {
   margin-left: 10px;
   padding: 5px;
 }
+
+.error {
+  color: #dc2626;
+  font-size: 0.9em;
+  margin-top: 5px;
+}
+
+#position {
+  width: 100%;
+  padding: 10px;
+  font-size: 1em;
+  margin: 10px 0;
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
