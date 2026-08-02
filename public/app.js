@@ -10,12 +10,22 @@ const submitBtn = document.getElementById('submitBtn');
 const nextBtn = document.getElementById('nextBtn');
 const micBtn = document.getElementById('micBtn');
 const recordingStatus = document.getElementById('recordingStatus');
+const backBtn = document.getElementById('backBtn');
+const skipBtn = document.getElementById('skipBtn');
 
 const MAX_POSITION_WORDS = 10;
 let currentPosition = null;
 let currentQuestion = null;
 let recognition = null;
 let isRecording = false;
+let finalTranscript = '';
+
+function stopRecording() {
+  isRecording = false;
+  if (recognition) recognition.stop();
+  micBtn.textContent = '🎤 Nahrávať';
+  recordingStatus.classList.add('hidden');
+}
 
 function setupSpeechRecognition() {
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -30,8 +40,6 @@ function setupSpeechRecognition() {
   recognition.lang = 'sk-SK';
   recognition.continuous = true;
   recognition.interimResults = true;
-
-  let finalTranscript = '';
 
   recognition.addEventListener('result', (event) => {
     let interimTranscript = '';
@@ -55,7 +63,6 @@ function setupSpeechRecognition() {
 
   recognition.addEventListener('end', () => {
     if (isRecording) {
-      // Ak sa nahrávanie ukončilo samo (napr. ticho), ale user ešte nekliknol stop
       stopRecording();
     }
   });
@@ -68,22 +75,11 @@ function setupSpeechRecognition() {
     recordingStatus.classList.remove('hidden');
   }
 
-  function stopRecording() {
-    isRecording = false;
-    recognition.stop();
-    micBtn.textContent = '🎤 Nahrávať';
-    recordingStatus.classList.add('hidden');
-  }
-
   micBtn.addEventListener('click', () => {
     if (isRecording) {
       stopRecording();
     } else {
-        try {
-        startRecording();
-      } catch (err) {
-        console.error('Chyba pri štarte nahrávania:', err);
-      }
+      startRecording();
     }
   });
 }
@@ -127,6 +123,27 @@ startBtn.addEventListener('click', () => {
   currentPosition = position.trim();
   setupDiv.classList.add('hidden');
   interviewDiv.classList.remove('hidden');
+  loadQuestion();
+});
+
+backBtn.addEventListener('click', () => {
+  interviewDiv.classList.add('hidden');
+  setupDiv.classList.remove('hidden');
+  positionInput.value = '';
+  currentPosition = null;
+  currentQuestion = null;
+
+  // Ak práve prebieha nahrávanie, zastav ho
+  if (isRecording) {
+    stopRecording();
+  }
+});
+
+skipBtn.addEventListener('click', () => {
+  // Ak práve prebieha nahrávanie, zastav ho pred načítaním novej otázky
+  if (isRecording) {
+    stopRecording();
+  }
   loadQuestion();
 });
 

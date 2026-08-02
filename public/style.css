@@ -88,3 +88,19 @@ select {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.4; }
 }
+
+.topControls {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+}
+
+.secondaryBtn {
+  background: #6b7280;
+  font-size: 0.9em;
+  padding: 8px 14px;
+}
+
+.secondaryBtn:hover {
+  background: #4b5563;
+}
