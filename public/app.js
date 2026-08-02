@@ -4,6 +4,7 @@ const startBtn = document.getElementById('startBtn');
 const setupDiv = document.getElementById('setup');
 const interviewDiv = document.getElementById('interview');
 const feedbackDiv = document.getElementById('feedback');
+const feedbackBackBtn = document.getElementById('feedbackBackBtn');
 const questionText = document.getElementById('questionText');
 const answerInput = document.getElementById('answerInput');
 const submitBtn = document.getElementById('submitBtn');
@@ -12,6 +13,13 @@ const micBtn = document.getElementById('micBtn');
 const recordingStatus = document.getElementById('recordingStatus');
 const backBtn = document.getElementById('backBtn');
 const skipBtn = document.getElementById('skipBtn');
+const historyBtn = document.getElementById('historyBtn');
+const historyBackBtn = document.getElementById('historyBackBtn');
+const historyView = document.getElementById('historyView');
+const historyList = document.getElementById('historyList');
+const statsText = document.getElementById('statsText');
+
+let scoreChartInstance = null;
 
 const MAX_POSITION_WORDS = 10;
 let currentPosition = null;
@@ -83,8 +91,6 @@ function setupSpeechRecognition() {
     }
   });
 }
-
-setupSpeechRecognition();
 
 function isValidPosition(text) {
   const trimmed = text.trim();
@@ -179,3 +185,109 @@ nextBtn.addEventListener('click', () => {
   interviewDiv.classList.remove('hidden');
   loadQuestion();
 });
+
+feedbackBackBtn.addEventListener('click', () => {
+  feedbackDiv.classList.add('hidden');
+  setupDiv.classList.remove('hidden');
+  positionInput.value = '';
+  currentPosition = null;
+  currentQuestion = null;
+});
+
+async function loadHistory() {
+  const res = await fetch('/api/history', { credentials: 'same-origin' });
+
+  if (!res.ok) {
+    alert('Nepodarilo sa načítať históriu');
+    return;
+  }
+
+  const data = await res.json();
+  renderStats(data.stats);
+  renderChart(data.history);
+  renderHistoryList(data.history);
+}
+
+function renderStats(stats) {
+  const avg = stats.avgScore ? stats.avgScore.toFixed(1) : '—';
+  statsText.textContent = `Celkový počet pokusov: ${stats.totalAttempts} | Priemerné skóre: ${avg}/10`;
+}
+
+function renderChart(history) {
+  const chronological = [...history].reverse();
+  const labels = chronological.map((_, i) => `#${i + 1}`);
+  const scores = chronological.map(item => item.score);
+
+  const ctx = document.getElementById('scoreChart');
+
+  if (scoreChartInstance) {
+    scoreChartInstance.destroy();
+  }
+
+  scoreChartInstance = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Skóre',
+        data: scores,
+        borderColor: '#2563eb',
+        backgroundColor: 'rgba(37, 99, 235, 0.1)',
+        tension: 0.2,
+        fill: true
+      }]
+    },
+    options: {
+      scales: {
+        y: { min: 0, max: 10, ticks: { stepSize: 1 } }
+      }
+    }
+  });
+}
+
+function renderHistoryList(history) {
+  historyList.innerHTML = '';
+
+  if (history.length === 0) {
+    historyList.textContent = 'Zatiaľ žiadne pokusy.';
+    return;
+  }
+
+  history.forEach(item => {
+    const entry = document.createElement('div');
+    entry.className = 'historyEntry';
+
+    const date = new Date(item.created_at).toLocaleString('sk-SK');
+
+    entry.innerHTML = `
+      <div class="historyHeader">
+        <strong>${escapeHtml(item.position)}</strong>
+        <span class="historyScore">${item.score}/10</span>
+      </div>
+      <p class="historyQuestion">${escapeHtml(item.question)}</p>
+      <p class="historyDate">${date}</p>
+    `;
+
+    historyList.appendChild(entry);
+  });
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+historyBtn.addEventListener('click', () => {
+  setupDiv.classList.add('hidden');
+  historyView.classList.remove('hidden');
+  loadHistory();
+});
+
+historyBackBtn.addEventListener('click', () => {
+  historyView.classList.add('hidden');
+  setupDiv.classList.remove('hidden');
+});
+
+// main
+setupSpeechRecognition()

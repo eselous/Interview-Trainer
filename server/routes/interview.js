@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { generateQuestion, evaluateAnswer } = require('../services/aiService');
+const { saveAttempt, getHistory, getStats } = require('../db/database');
 
 const MAX_POSITION_WORDS = 10;
 
@@ -41,10 +42,32 @@ router.post('/answer', async (req, res) => {
 
   try {
     const feedback = await evaluateAnswer(question, answer, position.trim(), level);
+
+    saveAttempt({
+      sessionId: req.sessionId,
+      position: position.trim(),
+      question,
+      answer,
+      score: feedback.score,
+      strengths: feedback.strengths,
+      improvements: feedback.improvements
+    });
+
     res.json(feedback);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Nepodarilo sa vyhodnotiť odpoveď' });
+  }
+});
+
+router.get('/history', (req, res) => {
+  try {
+    const history = getHistory(req.sessionId);
+    const stats = getStats(req.sessionId);
+    res.json({ history, stats });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Nepodarilo sa načítať históriu' });
   }
 });
 

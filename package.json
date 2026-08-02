@@ -22,6 +22,8 @@
   "homepage": "https://github.com/eselous/Interview-Trainer#readme",
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
+    "better-sqlite3": "^13.0.2",
+    "cookie-parser": "^1.4.7",
     "dotenv": "^17.4.2",
     "express": "^5.2.1"
   },
